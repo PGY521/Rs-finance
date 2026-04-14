@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RS Finance</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif;background:#f0f2f5;max-width:430px;margin:0 auto;position:relative;overflow-x:hidden;overflow-y:auto}
+
+/* ===== COLORS ===== */
+/* Header深蓝 #2B3A87, 浅紫蓝背景行 #dce3f5, 绿色按钮 #2EAA6A, 蓝色按钮 #3A52C4 */
+
+/* ===== TOP HEADER ===== */
+.top-header{background:#2B3A87;padding:10px 14px 0;position:sticky;top:0;z-index:300;width:100%;max-width:430px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.logo-wrap{display:flex;align-items:center;gap:8px}
+.logo-box{width:38px;height:38px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo-r{font-size:22px;font-weight:900;color:#2B3A87;line-height:1;font-style:italic}
+.logo-text{color:#fff;font-size:10px;font-weight:700;letter-spacing:1.5px;line-height:1.3}
+.logo-sub{color:#a8b8e8;font-size:8px;letter-spacing:1px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.lang-btn{display:flex;align-items:center;gap:3px;color:#fff;cursor:pointer;font-size:13px;padding:3px 4px}
+.lang-globe{font-size:18px;vertical-align:middle}
+.lang-caret{font-size:10px;color:#a8b8e8}
+.hdr-icon{color:#fff;cursor:pointer;font-size:20px;padding:3px;line-height:1}
+.avatar-circle{width:34px;height:34px;border-radius:50%;background:#5a9bd6;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
+.avatar-circle img,.avatar-circle svg{width:100%;height:100%;object-fit:cover}
+
+.shortcut-row{display:flex;gap:6px;padding-bottom:10px;justify-content:flex-end}
+.sc-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-width:68px}
+.sc-icon-wrap{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sc-icon-wrap img,.sc-icon-wrap svg{width:100%;height:100%;object-fit:contain}
+.sc-white{background:#fff}
+.sc-green{background:#2EAA6A}
+.sc-blue{background:#3A52C4}
+.sc-btn .sc-label{color:#fff;font-size:11px;font-weight:500}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#2B3A87;display:flex;z-index:400}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 11px;cursor:pointer;color:rgba(255,255,255,0.55);transition:.15s}
+.nav-item.active{color:#fff;background:rgba(255,255,255,0.13)}
+.nav-icon{font-size:22px;margin-bottom:2px;line-height:1}
+.nav-label{font-size:11px}
+
+/* ===== PAGES ===== */
+.page{display:none;padding-bottom:68px;min-height:100vh}
+.page.active{display:block}
+.sub-page{display:none}
+.sub-page.active{display:block}
+
+/* ===== PAGE TITLE BAR ===== */
+.ptb{background:#fff;display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #e8eaed}
+.ptb-back{font-size:24px;color:#333;cursor:pointer;margin-right:6px;line-height:1;font-weight:300}
+.ptb-title{flex:1;text-align:center;font-size:16px;font-weight:500;color:#222}
+.ptb-right{width:30px}
+
+/* ===== HOME ===== */
+.user-card{background:#fff;margin:12px 12px 10px;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.user-ava{width:54px;height:54px;border-radius:50%;background:#5a9bd6;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.user-ava svg{width:42px;height:42px}
+.user-info-block{flex:1}
+.user-name{font-size:15px;font-weight:700;color:#222}
+.user-id{font-size:12px;color:#888;margin-top:2px}
+.user-amounts{display:flex;gap:16px}
+.amt-block{text-align:right}
+.amt-num{font-size:17px;font-weight:700;color:#222}
+.amt-lbl{font-size:11px;color:#999;margin-top:2px}
+
+.quick-btns{display:flex;justify-content:space-around;background:#fff;margin:0 12px 12px;border-radius:12px;padding:14px 8px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.qb-item{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;flex:1}
+.qb-icon{width:52px;height:52px;border-radius:14px;background:#2B3A87;display:flex;align-items:center;justify-content:center}
+.qb-icon svg{width:28px;height:28px}
+.qb-label{font-size:13px;color:#222}
+
+.section-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 6px}
+.section-title{font-size:14px;font-weight:600;color:#222}
+.section-range{font-size:12px;color:#888;display:flex;align-items:center;gap:3px}
+.chart-wrap{background:#fff;margin:0 12px 10px;border-radius:12px;padding:10px 8px 8px;position:relative;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.chart-dl-btn{position:absolute;top:10px;right:10px;color:#aaa;cursor:pointer;font-size:16px}
+
+/* ===== ACCOUNT ===== */
+.tab-switcher{display:flex;margin:12px;border-radius:8px;overflow:hidden;border:2px solid #2B3A87}
+.tab-sw-item{flex:1;text-align:center;padding:9px;font-size:14px;font-weight:600;cursor:pointer;color:#2B3A87;background:#fff;transition:.15s}
+.tab-sw-item.active{background:#2B3A87;color:#fff}
+
+.acct-card{background:#fff;margin:0 12px 8px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.acct-hdr{background:#dce3f5;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.acct-hdr-name{font-size:13px;font-weight:700;color:#2B3A87;flex:1;margin-right:8px}
+.acct-hdr-right{display:flex;align-items:center;gap:8px}
+.acct-hdr-right .icon-sm{font-size:18px;cursor:pointer;color:#2B3A87}
+.acct-chevron{font-size:16px;color:#2B3A87;transition:.25s;line-height:1}
+.acct-chevron.open{transform:rotate(180deg)}
+
+.acct-meta-row{padding:8px 13px;font-size:12px;color:#666;border-bottom:1px solid #eef0f7;line-height:1.9}
+.acct-meta-row .v{font-weight:600;color:#222}
+.badge-on{background:#2EAA6A;color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;vertical-align:middle}
+
+.acct-ops{display:flex;gap:6px;padding:9px 13px;border-bottom:1px solid #eef0f7}
+.acct-op-btn{display:flex;align-items:center;gap:3px;font-size:12px;color:#2B3A87;cursor:pointer;padding:4px 9px;border:1.5px solid #2B3A87;border-radius:6px}
+
+.acct-body{padding:14px 13px}
+.acct-body-row{display:flex;align-items:center;margin-bottom:10px;gap:10px}
+.acct-body-row:last-child{margin-bottom:0}
+.acct-body-lbl{font-size:14px;color:#333;width:72px;flex-shrink:0}
+.acct-body-val{flex:1;border:1px solid #dde0ec;border-radius:6px;padding:8px 12px;font-size:14px;font-weight:600;color:#222;background:#fff}
+
+.pagination-strip{background:#2B3A87;padding:9px 14px;display:flex;align-items:center;gap:6px;margin:6px 12px 10px;border-radius:8px}
+.pg-records{color:#fff;font-size:13px}
+.pg-per{background:rgba(255,255,255,0.2);color:#fff;padding:3px 8px;border-radius:4px;font-size:12px}
+.pg-nav{background:rgba(255,255,255,0.2);color:#fff;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:14px}
+.pg-cur{background:#fff;color:#2B3A87;padding:3px 12px;border-radius:4px;font-size:13px;font-weight:700}
+.pg-space{flex:1}
+
+.empty-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#bbb}
+.empty-wrap .empty-svg{margin-bottom:12px;opacity:0.5}
+.empty-wrap p{font-size:14px;color:#aaa}
+
+/* ===== MENU LIST ===== */
+.menu-list{background:#fff;margin:0 12px;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:16px 16px;cursor:pointer;border-bottom:1px solid #f0f2f5}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:#f5f6fb}
+.menu-lbl{font-size:15px;color:#222}
+.menu-arr{color:#bbb;font-size:20px;font-weight:300}
+
+/* ===== FORM ===== */
+.form-bg{background:#f0f2f5;padding-bottom:80px}
+.form-card{background:#fff;margin:12px;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.form-grp{margin-bottom:15px}
+.form-grp:last-child{margin-bottom:0}
+.form-lbl{font-size:13px;color:#333;margin-bottom:6px;display:flex;align-items:center;gap:3px}
+.req{color:#e74c3c;font-size:14px}
+.form-sel,.form-inp,.form-ta{width:100%;border:1px solid #dde0ec;border-radius:8px;padding:10px 14px;font-size:14px;color:#333;background:#fff;appearance:none;-webkit-appearance:none;outline:none;font-family:inherit}
+.form-sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.form-inp:disabled,.form-sel:disabled{background:#f7f8fb;color:#aaa}
+.form-ta{min-height:82px;resize:none}
+.char-cnt{text-align:right;font-size:12px;color:#aaa;margin-top:3px}
+.amt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.amt-btn{border:1px solid #dde0ec;background:#fff;border-radius:8px;padding:10px 4px;text-align:center;font-size:14px;cursor:pointer;color:#333;transition:.15s}
+.amt-btn.selected{background:#2B3A87;color:#fff;border-color:#2B3A87}
+.pay-opts{display:flex;flex-direction:column;gap:8px}
+.pay-opt{border:1.5px solid #dde0ec;border-radius:10px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:.15s}
+.pay-opt.selected{border-color:#2B3A87;background:#eef0fa}
+.pay-icon-box{width:38px;height:38px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pay-opt .pay-name{font-size:14px;font-weight:600;color:#222}
+.pay-opt .pay-range{font-size:12px;color:#888;margin-top:1px}
+
+.risk-card{background:#f5f6fa;border-radius:10px;padding:13px 14px;margin:0 12px;font-size:12px;color:#888;line-height:1.85}
+.risk-card h4{font-size:13px;font-weight:700;color:#333;margin-bottom:6px;text-align:center}
+.risk-card a{color:#2B3A87;text-decoration:underline}
+.submit-btn{display:block;width:calc(100% - 24px);margin:14px 12px;background:#2B3A87;color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;text-align:center}
+.submit-btn:active{opacity:.85}
+
+/* ===== FILTER BAR ===== */
+.filter-bar{background:#fff;margin:10px 12px 8px;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:6px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.date-inp{flex:1;border:1px solid #dde0ec;border-radius:6px;padding:6px 9px;font-size:12px;color:#333}
+.fb{width:34px;height:34px;border-radius:7px;background:#2B3A87;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
+
+/* ===== RECORDS ===== */
+.rec-card{background:#fff;margin:0 12px 7px;border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.rec-hdr{background:#dce3f5;padding:9px 13px;display:flex;align-items:center;justify-content:space-between}
+.rec-hdr .tid{font-size:13px;font-weight:600;color:#2B3A87}
+.rec-hdr .chev{color:#2B3A87;font-size:15px;transition:.25s}
+.rec-hdr .chev.open{transform:rotate(180deg)}
+.rec-body{padding:11px 13px;display:flex;align-items:center;justify-content:space-between}
+.rec-amt{font-size:18px;font-weight:700;color:#222}
+.rec-right{text-align:right}
+.rec-time{font-size:12px;color:#999}
+.stat{font-size:12px;font-weight:600;margin-top:3px;display:inline-block}
+.s-pending{color:#f39c12}
+.s-approved{color:#2EAA6A}
+.s-cancelled{color:#aaa}
+.s-rejected{color:#e74c3c}
+.rec-detail{background:#f9faff;padding:11px 13px;border-top:1px solid #eef0f7;display:none;font-size:12px}
+.rec-detail.open{display:block}
+.rec-detail .dl{display:flex;justify-content:space-between;margin-bottom:5px;color:#888}
+.rec-detail .dl span:last-child{color:#333;font-weight:600}
+
+.trade-card{background:#fff;margin:0 12px 7px;border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.trade-hdr{background:#dce3f5;padding:9px 13px;display:flex;justify-content:space-between;align-items:center}
+.trade-body{padding:11px 13px;display:flex;justify-content:space-between;align-items:center}
+.t-symbol{font-size:14px;font-weight:700;color:#2B3A87}
+.t-price{font-size:13px;color:#888;margin-top:3px}
+.t-dir{font-size:12px;color:#888}
+.t-pnl{font-size:17px;font-weight:700}
+.pnl-pos{color:#e74c3c}
+.pnl-neg{color:#2EAA6A}
+
+/* ===== PERSONAL ===== */
+.logout-btn{display:block;width:calc(100% - 48px);margin:28px auto;background:#2B3A87;color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;text-align:center}
+
+/* ===== LANG DROPDOWN ===== */
+.lang-dd{position:fixed;top:60px;right:10px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.18);z-index:500;min-width:190px;display:none;overflow:hidden}
+.lang-dd.show{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.lang-opt{display:flex;align-items:center;gap:11px;padding:13px 16px;cursor:pointer;font-size:14px;color:#222;transition:.12s}
+.lang-opt:hover{background:#f5f6fa}
+.lang-opt.cur{color:#2B3A87;font-weight:700}
+.lang-flag{font-size:20px;line-height:1}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.72);color:#fff;padding:12px 22px;border-radius:10px;font-size:14px;z-index:1000;display:none;white-space:nowrap;pointer-events:none}
+.toast.show{display:block;animation:toastAnim 2.5s ease forwards}
+@keyframes toastAnim{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
+
+/* ===== SECTION PAGE TITLE (申请/报表/个人 无back按钮) ===== */
+.sec-title-bar{background:#fff;display:flex;align-items:center;justify-content:center;padding:14px 16px;border-bottom:1px solid #eee}
+.sec-title-bar h2{font-size:16px;font-weight:500;color:#222}
+
+canvas{width:100%!important}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LANG DROPDOWN -->
+<div class="lang-dd" id="langDd">
+  <div class="lang-opt" onclick="setLang('en')"><span class="lang-flag">🇺🇸</span>English</div>
+  <div class="lang-opt cur" onclick="setLang('zh')"><span class="lang-flag">🇨🇳</span>简体中文</div>
+  <div class="lang-opt" onclick="setLang('vi')"><span class="lang-flag">🇻🇳</span>Tiếng Việt</div>
+  <div class="lang-opt" onclick="setLang('id')"><span class="lang-flag">🇮🇩</span>Bahasa Indonesia</div>
+  <div class="lang-opt" onclick="setLang('ko')"><span class="lang-flag">🇰🇷</span>한국어</div>
+  <div class="lang-opt" onclick="setLang('ja')"><span class="lang-flag">🇯🇵</span>日本語</div>
+  <div class="lang-opt" onclick="setLang('mn')"><span class="lang-flag">🇲🇳</span>Монгол хэл</div>
+</div>
+
+<!-- ===== TOP HEADER ===== -->
+<div class="top-header" id="topHeader">
+  <div class="top-bar">
+    <div class="logo-wrap">
+      <div class="logo-box">
+        <!-- RS Finance logo: R letter blue italic -->
+        <svg viewBox="0 0 38 38" width="38" height="38"><rect width="38" height="38" fill="#fff" rx="8"/><text x="5" y="28" font-size="24" font-weight="900" fill="#2B3A87" font-style="italic" font-family="Arial">R</text><text x="16" y="28" font-size="14" font-weight="700" fill="#e74c3c" font-style="italic" font-family="Arial">S</text></svg>
+      </div>
+      <div>
+        <div class="logo-text">RSFINANCE</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="lang-btn" onclick="toggleLang(event)">
+        <span class="lang-globe">🌐</span>
+        <span id="currentLang" style="font-size:12px;color:#d0d8ff"> ▾</span>
+      </div>
+      <div class="hdr-icon">🔔</div>
+      <div class="hdr-icon">💬</div>
+      <div class="avatar-circle">
+        <!-- anime avatar -->
+        <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="17" fill="#4a80c4"/>
+          <ellipse cx="17" cy="14" rx="7" ry="8" fill="#f5c9a0"/>
+          <ellipse cx="14.5" cy="13" rx="1.5" ry="2" fill="#fff"/>
+          <ellipse cx="19.5" cy="13" rx="1.5" ry="2" fill="#fff"/>
+          <circle cx="14.5" cy="13.2" r="1" fill="#3a3060"/>
+          <circle cx="19.5" cy="13.2" r="1" fill="#3a3060"/>
+          <path d="M14 17 Q17 19 20 17" stroke="#c0856a" stroke-width="1" fill="none"/>
+          <path d="M10 34 Q17 28 24 34" fill="#5a7ed6"/>
+          <rect x="9" y="22" width="16" height="12" rx="4" fill="#5a7ed6"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="shortcut-row">
+    <div class="sc-btn">
+      <div class="sc-icon-wrap sc-white" style="padding:3px">
+        <!-- Trading Central icon -->
+        <svg viewBox="0 0 44 44" width="44" height="44"><rect width="44" height="44" fill="#fff" rx="9"/><circle cx="22" cy="22" r="16" fill="#fff" stroke="#1a3a8c" stroke-width="2"/><text x="22" y="18" text-anchor="middle" font-size="7" font-weight="700" fill="#1a3a8c" font-family="Arial">TRADING</text><text x="22" y="27" text-anchor="middle" font-size="7" font-weight="700" fill="#1a3a8c" font-family="Arial">CENTRAL</text><circle cx="22" cy="22" r="9" fill="#1a3a8c" opacity=".08"/></svg>
+      </div>
+      <span class="sc-label">Trading Central</span>
+    </div>
+    <div class="sc-btn" onclick="goDeposit()">
+      <div class="sc-icon-wrap sc-green">
+        <svg viewBox="0 0 44 44" width="44" height="44"><rect width="44" height="44" fill="#2EAA6A" rx="10"/><rect x="12" y="19" width="20" height="13" rx="2" fill="none" stroke="#fff" stroke-width="2"/><line x1="22" y1="13" x2="22" y2="26" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="18" y1="17" x2="22" y2="13" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="26" y1="17" x2="22" y2="13" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="27" x2="28" y2="27" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="sc-label">入金</span>
+    </div>
+    <div class="sc-btn" onclick="showApply('open-account')">
+      <div class="sc-icon-wrap sc-blue" style="align-items:center;justify-content:center">
+        <svg viewBox="0 0 44 44" width="44" height="44"><rect width="44" height="44" fill="#3A52C4" rx="10"/><line x1="22" y1="12" x2="22" y2="32" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line x1="12" y1="22" x2="32" y2="22" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+      </div>
+      <span class="sc-label">开户</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div>
+
+<!-- ======= HOME PAGE ======= -->
+<div class="page active" id="page-home">
+  <!-- User card -->
+  <div class="user-card">
+    <div class="user-ava">
+      <svg viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="27" cy="27" r="27" fill="#4a80c4"/>
+        <ellipse cx="27" cy="23" rx="10" ry="11" fill="#f5c9a0"/>
+        <ellipse cx="22.5" cy="21" rx="2" ry="2.5" fill="#fff"/>
+        <ellipse cx="31.5" cy="21" rx="2" ry="2.5" fill="#fff"/>
+        <circle cx="22.5" cy="21.3" r="1.3" fill="#3a3060"/>
+        <circle cx="31.5" cy="21.3" r="1.3" fill="#3a3060"/>
+        <path d="M22 27 Q27 30 32 27" stroke="#c0856a" stroke-width="1.3" fill="none"/>
+        <path d="M13 54 Q27 44 41 54" fill="#5a7ed6"/>
+        <rect x="14" y="33" width="26" height="21" rx="6" fill="#5a7ed6"/>
+        <rect x="20" y="9" width="14" height="6" rx="3" fill="#3a2a10" opacity=".5"/>
+      </svg>
+    </div>
+    <div class="user-info-block">
+      <div class="user-name">裴桂英</div>
+      <div class="user-id">ID：57327</div>
+    </div>
+    <div class="user-amounts">
+      <div class="amt-block">
+        <div class="amt-num" id="homeBalance">$484.23</div>
+        <div class="amt-lbl">我的余额</div>
+      </div>
+      <div class="amt-block">
+        <div class="amt-num" id="homeEquity">$484.23</div>
+        <div class="amt-lbl">净值</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="quick-btns">
+    <div class="qb-item" onclick="goDeposit()">
+      <div class="qb-icon">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><circle cx="14" cy="14" r="12" stroke="#fff" stroke-width="2"/><text x="14" y="19" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">$</text></svg>
+      </div>
+      <span class="qb-label">入金</span>
+    </div>
+    <div class="qb-item" onclick="showApply('withdraw')">
+      <div class="qb-icon">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><rect x="5" y="9" width="18" height="12" rx="2" stroke="#fff" stroke-width="1.8"/><line x1="14" y1="7" x2="14" y2="17" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="11" y1="15" x2="14" y2="18" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="17" y1="15" x2="14" y2="18" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <span class="qb-label">出金</span>
+    </div>
+    <div class="qb-item" onclick="showApply('transfer')">
+      <div class="qb-icon">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><circle cx="14" cy="14" r="12" stroke="#fff" stroke-width="1.8"/><line x1="9" y1="14" x2="19" y2="14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="11" x2="19" y2="14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="17" x2="19" y2="14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <span class="qb-label">转账</span>
+    </div>
+    <div class="qb-item" onclick="switchTab('account')">
+      <div class="qb-icon">
+        <svg viewBox="0 0 28 28" fill="none" width="28" height="28"><rect x="5" y="6" width="18" height="16" rx="2" stroke="#fff" stroke-width="1.8"/><line x1="9" y1="11" x2="19" y2="11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="15" x2="15" y2="15" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="qb-label">账户列表</span>
+    </div>
+  </div>
+
+  <!-- 盈亏监控 -->
+  <div class="section-hdr">
+    <span class="section-title">盈亏监控</span>
+    <span class="section-range">近7天 <span style="font-size:10px">▾</span></span>
+  </div>
+  <div class="chart-wrap">
+    <span class="chart-dl-btn">⬇</span>
+    <canvas id="profitChart" height="150"></canvas>
+  </div>
+
+  <!-- 出入金趋势 -->
+  <div class="section-hdr">
+    <span class="section-title">出入金趋势</span>
+    <span class="section-range">近7天 <span style="font-size:10px">▾</span></span>
+  </div>
+  <div class="chart-wrap">
+    <span class="chart-dl-btn">⬇</span>
+    <canvas id="flowChart" height="150"></canvas>
+  </div>
+</div>
+
+<!-- ======= ACCOUNT PAGE ======= -->
+<div class="page" id="page-account">
+  <!-- 账户列表 title -->
+  <div class="sec-title-bar" style="margin-top:0">
+    <h2>账户列表</h2>
+  </div>
+  <div class="tab-switcher" style="margin-top:12px">
+    <div class="tab-sw-item active" id="tab-real" onclick="switchAcctTab('real')">真实账户</div>
+    <div class="tab-sw-item" id="tab-demo" onclick="switchAcctTab('demo')">模拟账户</div>
+  </div>
+
+  <div id="realAcctList">
+    <div class="acct-card">
+      <div class="acct-hdr" onclick="toggleAcct()">
+        <div class="acct-hdr-name">MT4 : RS Finance-Live:8103352 &nbsp; RS-DR-STD5</div>
+        <div class="acct-hdr-right">
+          <span class="icon-sm" title="入金" onclick="event.stopPropagation();goDeposit()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" stroke="#2B3A87" stroke-width="1.5"/><line x1="10" y1="3" x2="10" y2="13" stroke="#2B3A87" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="6" x2="10" y2="3" stroke="#2B3A87" stroke-width="1.5" stroke-linecap="round"/><line x1="13" y1="6" x2="10" y2="3" stroke="#2B3A87" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+          <span class="icon-sm">🔒</span>
+          <span class="acct-chevron open" id="acctChevron">▾</span>
+        </div>
+      </div>
+      <div class="acct-meta-row">
+        余额: <span class="v" id="acctBal">$484.23</span> &nbsp;&nbsp;
+        信用金: <span class="v">$0</span> &nbsp;&nbsp;
+        净值: <span class="v" id="acctEq">$484.23</span><br>
+        币种: <span class="v">USD</span> &nbsp;&nbsp;
+        杠杆: <span class="v" id="acctLev">1:100</span> &nbsp;&nbsp;
+        状态: <span class="badge-on">启用</span>
+      </div>
+      <div class="acct-ops">
+        <div class="acct-op-btn" onclick="showApply('withdraw')">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="5" width="11" height="7" rx="1.5" stroke="#2B3A87" stroke-width="1.2"/><line x1="6.5" y1="2" x2="6.5" y2="9" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="5" x2="6.5" y2="7.5" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="5" x2="6.5" y2="7.5" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/></svg>
+          出金
+        </div>
+        <div class="acct-op-btn" onclick="showApply('transfer')">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><line x1="2" y1="6.5" x2="11" y2="6.5" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/><line x1="8" y1="4" x2="11" y2="6.5" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/><line x1="8" y1="9" x2="11" y2="6.5" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/></svg>
+          资金划转
+        </div>
+        <div class="acct-op-btn" onclick="showApply('leverage')">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#2B3A87" stroke-width="1.2"/><line x1="6.5" y1="4" x2="6.5" y2="6.5" stroke="#2B3A87" stroke-width="1.2" stroke-linecap="round"/><circle cx="6.5" cy="8.5" r=".8" fill="#2B3A87"/></svg>
+          修改杠杆
+        </div>
+      </div>
+      <div id="acctExpand">
+        <div class="acct-body">
+          <div class="acct-body-row"><span class="acct-body-lbl">总余额</span><div class="acct-body-val" id="totalBal">$484.23</div></div>
+          <div class="acct-body-row"><span class="acct-body-lbl">总信用金</span><div class="acct-body-val">$0</div></div>
+          <div class="acct-body-row"><span class="acct-body-lbl">总净值</span><div class="acct-body-val" id="totalEq">$484.23</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="demoAcctList" style="display:none">
+    <div class="empty-wrap"><div class="empty-svg"><?xml version="1.0"?><svg width="80" height="90" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="5" width="50" height="65" rx="4" fill="#e0e4f0" stroke="#c8cce0" stroke-width="1.5"/><rect x="18" y="18" width="34" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="28" width="28" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="38" width="22" height="4" rx="2" fill="#c0c6de"/><rect x="5" y="55" width="50" height="30" rx="4" fill="#d0d4ec" stroke="#b8bcd8" stroke-width="1.5"/></svg></div><p>暂无数据！</p></div>
+  </div>
+
+  <div class="pagination-strip" id="acctPagination">
+    <span class="pg-records" id="pgRecords">Records 1</span>
+    <div class="pg-per">20/Page</div>
+    <div class="pg-space"></div>
+    <div class="pg-nav">‹</div>
+    <div class="pg-cur">1/1</div>
+    <div class="pg-nav">›</div>
+  </div>
+</div>
+
+<!-- ======= APPLY PAGE ======= -->
+<div class="page" id="page-apply">
+
+  <!-- Apply Menu -->
+  <div class="sub-page active" id="apply-menu">
+    <div class="sec-title-bar"><h2>申请</h2></div>
+    <div style="height:12px"></div>
+    <div class="menu-list">
+      <div class="menu-item" onclick="showApply('open-account')"><span class="menu-lbl">开户申请</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showApply('deposit')"><span class="menu-lbl">入金申请</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showApply('withdraw')"><span class="menu-lbl">出金申请</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showApply('transfer')"><span class="menu-lbl">转账申请</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showApply('leverage')"><span class="menu-lbl">杠杆调整申请</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showApply('copy')"><span class="menu-lbl">跟单系统</span><span class="menu-arr">›</span></div>
+    </div>
+  </div>
+
+  <!-- 开户申请 -->
+  <div class="sub-page form-bg" id="apply-open-account">
+    <div class="ptb"><span class="ptb-back" onclick="backApply()">‹</span><span class="ptb-title">开户申请</span><span class="ptb-right"></span></div>
+    <div class="form-card">
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT版本</div>
+        <select class="form-sel" id="oa-ver"><option value="">请选择MT版本</option><option>MT4</option><option>MT5</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT类型</div>
+        <select class="form-sel" id="oa-type"><option value="">请选择MT类型</option><option>标准账户</option><option>ECN账户</option><option>RAW账户</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">申请备注</div>
+        <textarea class="form-ta" id="oa-remark" maxlength="200" oninput="cc(this,'oa-c')" placeholder="请输入申请备注"></textarea>
+        <div class="char-cnt"><span id="oa-c">0</span>/200</div>
+      </div>
+    </div>
+    <div class="risk-card">
+      <h4>风险提示书</h4>
+      以下内容以<a href="#">英文版本</a>为准，翻译文字仅供参考<br><br>
+      风险提示：保证金外汇和差价合约交易涉及高风险，未必适合所有投资者。阁下在决定买卖之前，应审慎考虑自己的投资目标、财务状况、投资需要及交易经验。因此，您不应将无法承受损失的资本用于投机。因此，请确保您完全理解所涉及的风险，如果有必要请寻求独立建议。
+    </div>
+    <button class="submit-btn" onclick="submitOA()">申请</button>
+  </div>
+
+  <!-- 入金申请 -->
+  <div class="sub-page form-bg" id="apply-deposit">
+    <div class="ptb"><span class="ptb-back" onclick="backApply()">‹</span><span class="ptb-title">入金申请</span><span class="ptb-right"></span></div>
+    <div class="form-card">
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT账号</div>
+        <select class="form-sel" id="dep-mt"><option value="">请选择MT账号</option><option value="8103352">MT4: 8103352 (RS-DR-STD5)</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 支付渠道</div>
+        <div class="pay-opts" id="payOpts">
+          <div class="pay-opt" onclick="selPay(this,'ANXPay',7.25)">
+            <div class="pay-icon-box" style="background:#e8f0fe"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#4a80d0"/><text x="14" y="19" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">A</text></svg></div>
+            <div><div class="pay-name">ANXPay - CNY</div><div class="pay-range">¥750-5000USD</div></div>
+          </div>
+          <div class="pay-opt" onclick="selPay(this,'BigsPay',7.22)">
+            <div class="pay-icon-box" style="background:#e6f9f0"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#2EAA6A"/><text x="14" y="19" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">B</text></svg></div>
+            <div><div class="pay-name">BigsPay - CNY</div><div class="pay-range">¥500-20000USD</div></div>
+          </div>
+          <div class="pay-opt" onclick="selPay(this,'USDT_TRC20',1)">
+            <div class="pay-icon-box" style="background:#e8f5e8"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#26a17b"/><text x="14" y="19" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">₮</text></svg></div>
+            <div><div class="pay-name">USDT_TRC20</div><div class="pay-range">100-100000USDT</div></div>
+          </div>
+          <div class="pay-opt" onclick="selPay(this,'USDT_BEP20',1)">
+            <div class="pay-icon-box" style="background:#fff8e6"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#f0b90b"/><text x="14" y="19" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">₮</text></svg></div>
+            <div><div class="pay-name">USDT_BEP20</div><div class="pay-range">100-100000USDT</div></div>
+          </div>
+          <div class="pay-opt" onclick="selPay(this,'USDT_ERC20',1)">
+            <div class="pay-icon-box" style="background:#ecf0ff"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#627eea"/><text x="14" y="19" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">₮</text></svg></div>
+            <div><div class="pay-name">USDT_ERC20</div><div class="pay-range">100-100000USDT</div></div>
+          </div>
+          <div class="pay-opt" onclick="selPay(this,'EXlink',7.20)">
+            <div class="pay-icon-box" style="background:#f5eefe"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#7c5cbf"/><text x="14" y="19" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">E</text></svg></div>
+            <div><div class="pay-name">EXlink - CNY</div><div class="pay-range">¥500-20000USD</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 入金金额</div>
+        <div class="amt-grid">
+          <div class="amt-btn" onclick="selAmt(this,50)">$50</div>
+          <div class="amt-btn" onclick="selAmt(this,100)">$100</div>
+          <div class="amt-btn" onclick="selAmt(this,200)">$200</div>
+          <div class="amt-btn" onclick="selAmt(this,500)">$500</div>
+          <div class="amt-btn" onclick="selAmt(this,800)">$800</div>
+          <div class="amt-btn" onclick="selAmt(this,1000)">$1000</div>
+          <div class="amt-btn" onclick="selAmt(this,2000)">$2000</div>
+          <div class="amt-btn" onclick="selAmt(this,5000)">$5000</div>
+          <div class="amt-btn" onclick="selAmt(this,8000)">$8000</div>
+          <div class="amt-btn" onclick="selAmt(this,10000)">$10000</div>
+          <div class="amt-btn" onclick="selAmt(this,20000)">$20000</div>
+        </div>
+        <input class="form-inp" type="number" id="dep-amt" placeholder="$ 金额范围在0-9999999之间" style="margin-top:10px" oninput="recalcDep()">
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">资货种类</div>
+        <select class="form-sel" id="dep-currency"><option value="">选择货币种类</option><option>CNY</option><option>USDT</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">汇率</div>
+        <input class="form-inp" id="dep-rate" disabled placeholder="—">
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">市场对应金额</div>
+        <input class="form-inp" id="dep-local" disabled placeholder="—">
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">备注</div>
+        <textarea class="form-ta" id="dep-remark" maxlength="200" oninput="cc(this,'dep-c')" placeholder="请输入"></textarea>
+        <div class="char-cnt"><span id="dep-c">0</span>/200</div>
+      </div>
+    </div>
+    <div class="risk-card">
+      <h4>以下内容以<a href="#">英文版本</a>为准，翻译文字仅供参考</h4>
+      风险提示：保证金外汇和差价合约交易涉及高风险，未必适合所有投资者。阁下在决定买卖之前，应审慎考虑自己的投资目标、财务状况、投资需要及交易经验。因此，您不应将无法承受损失的资本用于投机。因此，请确保您完全理解所涉及的风险，如果有必要请寻求独立建议。
+    </div>
+    <button class="submit-btn" onclick="submitDeposit()">申请</button>
+  </div>
+
+  <!-- 出金申请 -->
+  <div class="sub-page form-bg" id="apply-withdraw">
+    <div class="ptb"><span class="ptb-back" onclick="backApply()">‹</span><span class="ptb-title">出金申请</span><span class="ptb-right"></span></div>
+    <div class="form-card">
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT账号</div>
+        <select class="form-sel" id="wd-mt" onchange="updWd()"><option value="">请选择MT账号</option><option value="8103352">MT4: 8103352</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">可用金额</div>
+        <input class="form-inp" id="wd-avail" disabled placeholder="$ —">
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 钱包类型</div>
+        <select class="form-sel"><option value="">请选择钱包类型</option><option>USDT-TRC20</option><option>USDT-ERC20</option><option>银行卡</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 钱包地址</div>
+        <select class="form-sel"><option value="">请选择钱包地址</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">币种</div>
+        <input class="form-inp" disabled placeholder="—">
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 金额（美金）</div>
+        <div style="display:flex;align-items:center;border:1px solid #dde0ec;border-radius:8px;overflow:hidden">
+          <span style="padding:0 10px;font-size:14px;color:#aaa;background:#f7f8fb;height:100%;line-height:42px">$</span>
+          <input type="number" id="wd-amt" placeholder="请输入金额（美金）" style="flex:1;border:none;padding:10px 12px;font-size:14px;outline:none">
+        </div>
+      </div>
+      <div class="form-grp"><div class="form-lbl">汇率</div><input class="form-inp" disabled placeholder="—"></div>
+      <div class="form-grp"><div class="form-lbl">币种对应金额</div><input class="form-inp" disabled placeholder="—"></div>
+      <div class="form-grp">
+        <div class="form-lbl">备注</div>
+        <textarea class="form-ta" id="wd-remark" maxlength="200" oninput="cc(this,'wd-c')" placeholder="请输入"></textarea>
+        <div class="char-cnt"><span id="wd-c">0</span>/200</div>
+      </div>
+    </div>
+    <div class="risk-card">
+      <h4>出金风险提示书</h4>
+      以下内容以<a href="#">英文版本</a>为准，翻译文字仅供参考<br><br>
+      风险提示：保证金外汇和差价合约交易涉及高风险，未必适合所有投资者。阁下在决定买卖之前，应审慎考虑自己的投资目标、财务状况、投资需要及交易经验。因此，您不应将无法承受损失的资本用于投机。因此，请确保您完全理解所涉及的风险，如果有必要请寻求独立建议。
+    </div>
+    <button class="submit-btn" onclick="submitWithdraw()">申请</button>
+  </div>
+
+  <!-- 转账申请 -->
+  <div class="sub-page form-bg" id="apply-transfer">
+    <div class="ptb"><span class="ptb-back" onclick="backApply()">‹</span><span class="ptb-title">转账申请</span><span class="ptb-right"></span></div>
+    <div class="form-card">
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT账号（出）</div>
+        <select class="form-sel" id="tr-from" onchange="updTr()"><option value="">请选择MT账号（出）</option><option value="8103352">MT4: 8103352</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">可用金额</div>
+        <div style="display:flex;align-items:center;border:1px solid #dde0ec;border-radius:8px;overflow:hidden">
+          <span style="padding:0 10px;font-size:14px;color:#aaa;background:#f7f8fb;line-height:42px">$</span>
+          <input class="form-inp" id="tr-avail" disabled placeholder="—" style="border:none;flex:1">
+        </div>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT账号（入）</div>
+        <select class="form-sel" id="tr-to"><option value="">请选择MT账号（入）</option><option value="demo001">模拟: DEMO001</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 金额（美金）</div>
+        <div style="display:flex;align-items:center;border:1px solid #dde0ec;border-radius:8px;overflow:hidden">
+          <span style="padding:0 10px;font-size:14px;color:#aaa;background:#f7f8fb;line-height:42px">$</span>
+          <input type="number" id="tr-amt" placeholder="请输入金额（美金）" style="flex:1;border:none;padding:10px 12px;font-size:14px;outline:none">
+        </div>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">备注</div>
+        <textarea class="form-ta" id="tr-remark" maxlength="200" oninput="cc(this,'tr-c')" placeholder="请输入"></textarea>
+        <div class="char-cnt"><span id="tr-c">0</span>/200</div>
+      </div>
+    </div>
+    <div class="risk-card">
+      <h4>转账风险提示书</h4>
+      以下内容以<a href="#">英文版本</a>为准，翻译文字仅供参考<br><br>
+      风险提示：保证金外汇和差价合约交易涉及高风险，未必适合所有投资者。阁下在决定买卖之前，应审慎考虑自己的投资目标、财务状况、投资需要及交易经验。因此，您不应将无法承受损失的资本用于投机。因此，请确保您完全理解所涉及的风险，如果有必要请寻求独立建议。
+    </div>
+    <button class="submit-btn" onclick="submitTransfer()">申请</button>
+  </div>
+
+  <!-- 杠杆调整申请 -->
+  <div class="sub-page form-bg" id="apply-leverage">
+    <div class="ptb"><span class="ptb-back" onclick="backApply()">‹</span><span class="ptb-title">杠杆调整申请</span><span class="ptb-right"></span></div>
+    <div class="form-card">
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> MT账号</div>
+        <select class="form-sel" id="lv-mt" onchange="updLv()"><option value="">请选择MT账号</option><option value="8103352">MT4: 8103352</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">目前杠杆</div>
+        <input class="form-inp" id="lv-cur" disabled placeholder="—">
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl"><span class="req">*</span> 新杠杆</div>
+        <select class="form-sel" id="lv-new"><option value="">请选择新杠杆</option><option>1:50</option><option>1:100</option><option>1:200</option><option>1:300</option><option>1:500</option></select>
+      </div>
+      <div class="form-grp">
+        <div class="form-lbl">备注</div>
+        <textarea class="form-ta" id="lv-remark" maxlength="200" oninput="cc(this,'lv-c')" placeholder="请输入"></textarea>
+        <div class="char-cnt"><span id="lv-c">0</span>/200</div>
+      </div>
+    </div>
+    <div class="risk-card">
+      <h4>修改杠杆风险提示书</h4>
+      以下内容以<a href="#">英文版本</a>为准，翻译文字仅供参考<br><br>
+      风险提示：保证金外汇和差价合约交易涉及高风险，未必适合所有投资者。阁下在决定买卖之前，应审慎考虑自己的投资目标、财务状况、投资需要及交易经验。因此，您不应将无法承受损失的资本用于投机。因此，请确保您完全理解所涉及的风险，如果有必要请寻求独立建议。
+    </div>
+    <button class="submit-btn" onclick="submitLeverage()">申请</button>
+  </div>
+
+  <!-- 跟单系统 -->
+  <div class="sub-page form-bg" id="apply-copy">
+    <div class="ptb"><span class="ptb-back" onclick="backApply()">‹</span><span class="ptb-title">跟单系统</span><span class="ptb-right"></span></div>
+    <div class="empty-wrap" style="margin-top:40px"><div class="empty-svg"><svg width="80" height="90" viewBox="0 0 80 90" fill="none"><rect x="10" y="5" width="50" height="65" rx="4" fill="#e0e4f0" stroke="#c8cce0" stroke-width="1.5"/><rect x="18" y="18" width="34" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="28" width="28" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="38" width="22" height="4" rx="2" fill="#c0c6de"/><rect x="5" y="55" width="50" height="30" rx="4" fill="#d0d4ec" stroke="#b8bcd8" stroke-width="1.5"/></svg></div><p>暂无数据！</p></div>
+  </div>
+</div>
+
+<!-- ======= REPORT PAGE ======= -->
+<div class="page" id="page-report">
+
+  <!-- Report Menu -->
+  <div class="sub-page active" id="report-menu">
+    <div class="sec-title-bar"><h2>报表</h2></div>
+    <div style="height:12px"></div>
+    <div class="menu-list">
+      <div class="menu-item" onclick="showReport('deposit-rec')"><span class="menu-lbl">入金记录</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showReport('withdraw-rec')"><span class="menu-lbl">出金记录</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showReport('transfer-rec')"><span class="menu-lbl">转账记录</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showReport('trade-rec')"><span class="menu-lbl">交易记录</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showReport('order-rec')"><span class="menu-lbl">挂单记录</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showReport('position-rec')"><span class="menu-lbl">持仓记录</span><span class="menu-arr">›</span></div>
+    </div>
+  </div>
+
+  <!-- 入金记录 -->
+  <div class="sub-page" id="report-deposit-rec">
+    <div class="ptb"><span class="ptb-back" onclick="backReport()">‹</span><span class="ptb-title">入金记录</span><span class="ptb-right"></span></div>
+    <div class="filter-bar">
+      <input class="date-inp" value="2026-04-08 ~ 2026-04-14" readonly>
+      <div class="fb">🔍</div><div class="fb">⚙</div><div class="fb">≡</div><div class="fb">📄</div>
+    </div>
+    <div id="depRecList"></div>
+    <div id="depPg"></div>
+  </div>
+
+  <!-- 出金记录 -->
+  <div class="sub-page" id="report-withdraw-rec">
+    <div class="ptb"><span class="ptb-back" onclick="backReport()">‹</span><span class="ptb-title">出金记录</span><span class="ptb-right"></span></div>
+    <div class="filter-bar">
+      <input class="date-inp" value="2026-04-08 ~ 2026-04-14" readonly>
+      <div class="fb">🔍</div><div class="fb">⚙</div><div class="fb">≡</div><div class="fb">📄</div>
+    </div>
+    <div id="wdRecList"></div>
+  </div>
+
+  <!-- 转账记录 -->
+  <div class="sub-page" id="report-transfer-rec">
+    <div class="ptb"><span class="ptb-back" onclick="backReport()">‹</span><span class="ptb-title">转账记录</span><span class="ptb-right"></span></div>
+    <div class="filter-bar">
+      <input class="date-inp" value="2026-04-08 ~ 2026-04-14" readonly>
+      <div class="fb">🔍</div><div class="fb">⚙</div><div class="fb">≡</div><div class="fb">📄</div>
+    </div>
+    <div id="trRecList"></div>
+  </div>
+
+  <!-- 交易记录 -->
+  <div class="sub-page" id="report-trade-rec">
+    <div class="ptb"><span class="ptb-back" onclick="backReport()">‹</span><span class="ptb-title">交易记录</span><span class="ptb-right"></span></div>
+    <div class="filter-bar">
+      <input class="date-inp" value="2026-04-08 ~ 2026-04-14" readonly>
+      <div class="fb">🔍</div><div class="fb">⚙</div><div class="fb">≡</div><div class="fb">📄</div>
+    </div>
+    <div id="tdRecList"></div>
+    <div style="text-align:center;padding:8px 0;font-size:13px;color:#aaa">共4条</div>
+    <div class="pagination-strip" style="margin:0 12px 12px">
+      <div class="pg-space"></div>
+      <div class="pg-nav">‹</div><div class="pg-cur">1</div><div class="pg-nav">›</div>
+    </div>
+  </div>
+
+  <!-- 挂单记录 -->
+  <div class="sub-page" id="report-order-rec">
+    <div class="ptb"><span class="ptb-back" onclick="backReport()">‹</span><span class="ptb-title">挂单记录</span><span class="ptb-right"></span></div>
+    <div class="filter-bar">
+      <input class="date-inp" value="2026-04-08 ~ 2026-04-14" readonly>
+      <div class="fb">🔍</div><div class="fb">⚙</div><div class="fb">≡</div><div class="fb">📄</div>
+    </div>
+    <div class="empty-wrap" style="margin-top:20px"><div class="empty-svg"><svg width="80" height="90" viewBox="0 0 80 90" fill="none"><rect x="10" y="5" width="50" height="65" rx="4" fill="#e0e4f0" stroke="#c8cce0" stroke-width="1.5"/><rect x="18" y="18" width="34" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="28" width="28" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="38" width="22" height="4" rx="2" fill="#c0c6de"/><rect x="5" y="55" width="50" height="30" rx="4" fill="#d0d4ec" stroke="#b8bcd8" stroke-width="1.5"/></svg></div><p>暂无数据！</p></div>
+  </div>
+
+  <!-- 持仓记录 -->
+  <div class="sub-page" id="report-position-rec">
+    <div class="ptb"><span class="ptb-back" onclick="backReport()">‹</span><span class="ptb-title">持仓记录</span><span class="ptb-right"></span></div>
+    <div class="filter-bar">
+      <input class="date-inp" value="2026-04-08 ~ 2026-04-14" readonly>
+      <div class="fb">🔍</div><div class="fb">⚙</div><div class="fb">≡</div><div class="fb">📄</div>
+    </div>
+    <div class="empty-wrap" style="margin-top:20px"><div class="empty-svg"><svg width="80" height="90" viewBox="0 0 80 90" fill="none"><rect x="10" y="5" width="50" height="65" rx="4" fill="#e0e4f0" stroke="#c8cce0" stroke-width="1.5"/><rect x="18" y="18" width="34" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="28" width="28" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="38" width="22" height="4" rx="2" fill="#c0c6de"/><rect x="5" y="55" width="50" height="30" rx="4" fill="#d0d4ec" stroke="#b8bcd8" stroke-width="1.5"/></svg></div><p>暂无数据！</p></div>
+  </div>
+</div>
+
+<!-- ======= PERSONAL PAGE ======= -->
+<div class="page" id="page-personal">
+
+  <div class="sub-page active" id="personal-menu">
+    <div class="sec-title-bar"><h2>个人</h2></div>
+    <div style="height:12px"></div>
+    <div class="menu-list">
+      <div class="menu-item" onclick="showPersonal('detail')"><span class="menu-lbl">个人详情</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showPersonal('password')"><span class="menu-lbl">修改密码</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showPersonal('notice')"><span class="menu-lbl">公告</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showPersonal('download')"><span class="menu-lbl">下载</span><span class="menu-arr">›</span></div>
+      <div class="menu-item" onclick="showPersonal('language')"><span class="menu-lbl">语言</span><span class="menu-arr">›</span></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">退出登录</button>
+  </div>
+
+  <!-- 公告 -->
+  <div class="sub-page" id="personal-notice">
+    <div class="ptb"><span class="ptb-back" onclick="backPersonal()">‹</span><span class="ptb-title">公告</span><span class="ptb-right"></span></div>
+    <div class="empty-wrap" style="margin-top:60px"><div class="empty-svg"><svg width="80" height="90" viewBox="0 0 80 90" fill="none"><rect x="10" y="5" width="50" height="65" rx="4" fill="#e0e4f0" stroke="#c8cce0" stroke-width="1.5"/><rect x="18" y="18" width="34" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="28" width="28" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="38" width="22" height="4" rx="2" fill="#c0c6de"/><rect x="5" y="55" width="50" height="30" rx="4" fill="#d0d4ec" stroke="#b8bcd8" stroke-width="1.5"/></svg></div><p>暂无数据！</p></div>
+  </div>
+
+  <!-- 个人详情 -->
+  <div class="sub-page" id="personal-detail">
+    <div class="ptb"><span class="ptb-back" onclick="backPersonal()">‹</span><span class="ptb-title">个人详情</span><span class="ptb-right"></span></div>
+    <div class="form-card" style="margin-top:12px">
+      <div class="acct-body-row"><span class="acct-body-lbl">姓名</span><div class="acct-body-val">裴桂英</div></div>
+      <div class="acct-body-row"><span class="acct-body-lbl">ID</span><div class="acct-body-val">57327</div></div>
+      <div class="acct-body-row"><span class="acct-body-lbl">邮箱</span><div class="acct-body-val">pei***@gmail.com</div></div>
+      <div class="acct-body-row"><span class="acct-body-lbl">手机</span><div class="acct-body-val">+86 138****8888</div></div>
+    </div>
+  </div>
+
+  <!-- 修改密码 -->
+  <div class="sub-page form-bg" id="personal-password">
+    <div class="ptb"><span class="ptb-back" onclick="backPersonal()">‹</span><span class="ptb-title">修改密码</span><span class="ptb-right"></span></div>
+    <div class="form-card">
+      <div class="form-grp"><div class="form-lbl">原密码</div><input class="form-inp" type="password" placeholder="请输入原密码"></div>
+      <div class="form-grp"><div class="form-lbl">新密码</div><input class="form-inp" type="password" placeholder="请输入新密码"></div>
+      <div class="form-grp"><div class="form-lbl">确认密码</div><input class="form-inp" type="password" placeholder="请再次输入新密码"></div>
+    </div>
+    <button class="submit-btn" onclick="toast('密码修改成功')">确认修改</button>
+  </div>
+
+  <!-- 下载 -->
+  <div class="sub-page" id="personal-download">
+    <div class="ptb"><span class="ptb-back" onclick="backPersonal()">‹</span><span class="ptb-title">下载</span><span class="ptb-right"></span></div>
+    <div style="height:12px"></div>
+    <div class="menu-list">
+      <div class="menu-item" onclick="toast('正在下载 MT4 Android...')"><span class="menu-lbl">MT4 Android</span><span class="menu-arr" style="font-size:16px">⬇</span></div>
+      <div class="menu-item" onclick="toast('正在下载 MT4 iOS...')"><span class="menu-lbl">MT4 iOS</span><span class="menu-arr" style="font-size:16px">⬇</span></div>
+      <div class="menu-item" onclick="toast('正在下载 MT5 Android...')"><span class="menu-lbl">MT5 Android</span><span class="menu-arr" style="font-size:16px">⬇</span></div>
+      <div class="menu-item" onclick="toast('正在下载 MT5 iOS...')"><span class="menu-lbl">MT5 iOS</span><span class="menu-arr" style="font-size:16px">⬇</span></div>
+    </div>
+  </div>
+
+  <!-- 语言 -->
+  <div class="sub-page" id="personal-language">
+    <div class="ptb"><span class="ptb-back" onclick="backPersonal()">‹</span><span class="ptb-title">语言</span><span class="ptb-right"></span></div>
+    <div style="height:12px"></div>
+    <div class="menu-list" id="langMenuList">
+      <div class="menu-item" onclick="setLangMenu('en','English',this)"><span class="menu-lbl">🇺🇸 English</span><span class="menu-arr lang-tick">›</span></div>
+      <div class="menu-item" onclick="setLangMenu('zh','简体中文',this)"><span class="menu-lbl">🇨🇳 简体中文</span><span class="menu-arr lang-tick active-tick">✓</span></div>
+      <div class="menu-item" onclick="setLangMenu('vi','Tiếng Việt',this)"><span class="menu-lbl">🇻🇳 Tiếng Việt</span><span class="menu-arr lang-tick">›</span></div>
+      <div class="menu-item" onclick="setLangMenu('id','Bahasa Indonesia',this)"><span class="menu-lbl">🇮🇩 Bahasa Indonesia</span><span class="menu-arr lang-tick">›</span></div>
+      <div class="menu-item" onclick="setLangMenu('ko','한국어',this)"><span class="menu-lbl">🇰🇷 한국어</span><span class="menu-arr lang-tick">›</span></div>
+      <div class="menu-item" onclick="setLangMenu('ja','日本語',this)"><span class="menu-lbl">🇯🇵 日本語</span><span class="menu-arr lang-tick">›</span></div>
+      <div class="menu-item" onclick="setLangMenu('mn','Монгол хэл',this)"><span class="menu-lbl">🇲🇳 Монгол хэл</span><span class="menu-arr lang-tick">›</span></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main content -->
+
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+    <div class="nav-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 3L21 12V21H15V15H9V21H3V12Z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+    </div>
+    <span class="nav-label">首页</span>
+  </div>
+  <div class="nav-item" id="nav-account" onclick="switchTab('account')">
+    <div class="nav-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="13" x2="13" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-label">账户</span>
+  </div>
+  <div class="nav-item" id="nav-apply" onclick="switchTab('apply')">
+    <div class="nav-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-label">申请</span>
+  </div>
+  <div class="nav-item" id="nav-report" onclick="switchTab('report')">
+    <div class="nav-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="16" x2="7" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="11" y1="16" x2="11" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="16" x2="15" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-label">报表</span>
+  </div>
+  <div class="nav-item" id="nav-personal" onclick="switchTab('personal')">
+    <div class="nav-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-label">个人</span>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const S = {
+  balance: 484.23,
+  equity: 484.23,
+  leverage: '1:100',
+  depRecs: [
+    {id:'1175907', amt:500, time:'2026-04-14 19:40:55', status:'待通道确认', ch:'ANXPay'},
+    {id:'1175899', amt:500, time:'2026-04-14 19:06:38', status:'待通道确认', ch:'BigsPay'},
+    {id:'1175875', amt:500, time:'2026-04-14 17:28:07', status:'已审批', ch:'USDT_TRC20'},
+    {id:'1175871', amt:500, time:'2026-04-14 17:16:13', status:'取消', ch:'EXlink'},
+  ],
+  wdRecs: [],
+  trRecs: [],
+  tdRecs: [
+    {id:'61264805', sym:'XAUUSD#', dir:'buy', from:4765, to:4759.16, pnl:-5.84},
+    {id:'61264122', sym:'XAUUSD#', dir:'buy', from:4774.65, to:4765.81, pnl:-8.84},
+    {id:'61262263', sym:'XAUUSD#', dir:'buy', from:4778.65, to:4779.27, pnl:0.62},
+    {id:'61262143', sym:'XAUUSD#', dir:'buy', from:4779.33, to:4779.62, pnl:0.29},
+  ],
+  selAmt: 0,
+  selPay: '',
+  selRate: 1,
+  acctOpen: true,
+};
+
+// ===== NAV =====
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  if(tab==='report') renderAll();
+}
+
+// ===== APPLY =====
+function showApply(type) {
+  switchTab('apply');
+  document.querySelectorAll('#page-apply .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('apply-'+type).classList.add('active');
+}
+function backApply() {
+  document.querySelectorAll('#page-apply .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('apply-menu').classList.add('active');
+}
+function goDeposit(){ showApply('deposit'); }
+
+// ===== REPORT =====
+function showReport(type) {
+  switchTab('report');
+  document.querySelectorAll('#page-report .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('report-'+type).classList.add('active');
+  renderAll();
+}
+function backReport() {
+  document.querySelectorAll('#page-report .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('report-menu').classList.add('active');
+}
+
+// ===== PERSONAL =====
+function showPersonal(type) {
+  document.querySelectorAll('#page-personal .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('personal-'+type).classList.add('active');
+}
+function backPersonal() {
+  document.querySelectorAll('#page-personal .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('personal-menu').classList.add('active');
+}
+
+// ===== ACCOUNT =====
+function toggleAcct() {
+  S.acctOpen = !S.acctOpen;
+  const ex = document.getElementById('acctExpand');
+  const ch = document.getElementById('acctChevron');
+  ex.style.display = S.acctOpen ? 'block' : 'none';
+  ch.classList.toggle('open', S.acctOpen);
+}
+function switchAcctTab(type) {
+  document.getElementById('tab-real').classList.toggle('active', type==='real');
+  document.getElementById('tab-demo').classList.toggle('active', type==='demo');
+  document.getElementById('realAcctList').style.display = type==='real'?'block':'none';
+  document.getElementById('demoAcctList').style.display = type==='demo'?'block':'none';
+  document.getElementById('pgRecords').textContent = type==='real'?'Records 1':'Records 0';
+}
+
+// ===== BALANCE UPDATE =====
+function updBal() {
+  const f = v=>'$'+v.toFixed(2);
+  document.getElementById('homeBalance').textContent = f(S.balance);
+  document.getElementById('homeEquity').textContent = f(S.equity);
+  document.getElementById('acctBal').textContent = f(S.balance);
+  document.getElementById('acctEq').textContent = f(S.equity);
+  document.getElementById('totalBal').textContent = f(S.balance);
+  document.getElementById('totalEq').textContent = f(S.equity);
+  document.getElementById('acctLev').textContent = S.leverage;
+}
+
+// ===== DEPOSIT =====
+function selPay(el, name, rate) {
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  S.selPay = name; S.selRate = rate;
+  document.getElementById('dep-rate').value = rate;
+  recalcDep();
+}
+function selAmt(el, amt) {
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  S.selAmt = amt;
+  document.getElementById('dep-amt').value = amt;
+  recalcDep();
+}
+function recalcDep() {
+  const rate = parseFloat(document.getElementById('dep-rate').value)||0;
+  const amt = parseFloat(document.getElementById('dep-amt').value)||0;
+  document.getElementById('dep-local').value = (rate&&amt)?(amt*rate).toFixed(2):'';
+}
+function submitDeposit() {
+  const mt = document.getElementById('dep-mt').value;
+  const amt = parseFloat(document.getElementById('dep-amt').value);
+  if(!mt){toast('请选择MT账号');return;}
+  if(!S.selPay){toast('请选择支付渠道');return;}
+  if(!amt||amt<=0){toast('请输入入金金额');return;}
+  const ts = new Date().toISOString().replace('T',' ').slice(0,19);
+  const nid = String(1175907 + S.depRecs.length + 1);
+  S.depRecs.unshift({id:nid, amt, time:ts, status:'待通道确认', ch:S.selPay});
+  S.balance += amt; S.equity += amt;
+  updBal(); updFlow();
+  toast('✅ 入金申请已提交！余额 +$'+amt.toFixed(2));
+  renderAll();
+  document.getElementById('dep-amt').value='';
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('selected'));
+  S.selAmt=0;
+}
+
+// ===== WITHDRAW =====
+function updWd() {
+  const v=document.getElementById('wd-mt').value;
+  document.getElementById('wd-avail').value = v?S.balance.toFixed(2):'';
+}
+function submitWithdraw() {
+  const mt=document.getElementById('wd-mt').value;
+  const amt=parseFloat(document.getElementById('wd-amt').value);
+  if(!mt){toast('请选择MT账号');return;}
+  if(!amt||amt<=0){toast('请输入出金金额');return;}
+  if(amt>S.balance){toast('❌ 余额不足，当前 $'+S.balance.toFixed(2));return;}
+  S.balance-=amt; S.equity-=amt;
+  const ts=new Date().toISOString().replace('T',' ').slice(0,19);
+  S.wdRecs.unshift({id:'WD'+Date.now(), amt, time:ts, status:'审核中'});
+  updBal(); updFlow(); toast('✅ 出金申请提交！余额 -$'+amt.toFixed(2));
+  renderAll(); document.getElementById('wd-amt').value=''; updWd();
+}
+
+// ===== TRANSFER =====
+function updTr() {
+  const v=document.getElementById('tr-from').value;
+  document.getElementById('tr-avail').value = v?S.balance.toFixed(2):'';
+}
+function submitTransfer() {
+  const from=document.getElementById('tr-from').value;
+  const to=document.getElementById('tr-to').value;
+  const amt=parseFloat(document.getElementById('tr-amt').value);
+  if(!from){toast('请选择出账账号');return;}
+  if(!to){toast('请选择入账账号');return;}
+  if(!amt||amt<=0){toast('请输入金额');return;}
+  if(amt>S.balance){toast('❌ 余额不足');return;}
+  S.balance-=amt; S.equity-=amt;
+  const ts=new Date().toISOString().replace('T',' ').slice(0,19);
+  S.trRecs.unshift({id:'TR'+Date.now(), amt, time:ts, status:'已完成', from, to});
+  updBal(); updFlow(); toast('✅ 转账成功！-$'+amt.toFixed(2));
+  renderAll(); document.getElementById('tr-amt').value=''; updTr();
+}
+
+// ===== LEVERAGE =====
+function updLv() {
+  const v=document.getElementById('lv-mt').value;
+  document.getElementById('lv-cur').value = v?S.leverage:'';
+}
+function submitLeverage() {
+  const mt=document.getElementById('lv-mt').value;
+  const lv=document.getElementById('lv-new').value;
+  if(!mt){toast('请选择MT账号');return;}
+  if(!lv){toast('请选择新杠杆');return;}
+  S.leverage=lv;
+  document.getElementById('acctLev').textContent=lv;
+  document.getElementById('lv-cur').value=lv;
+  toast('✅ 杠杆已调整为 '+lv);
+}
+function submitOA() {
+  const ver=document.getElementById('oa-ver').value;
+  const tp=document.getElementById('oa-type').value;
+  if(!ver||!tp){toast('请填写完整信息');return;}
+  toast('✅ 开户申请已提交！');
+}
+
+// ===== RENDER RECORDS =====
+function renderAll() {
+  renderDep(); renderWd(); renderTr(); renderTd();
+}
+const SC = {待通道确认:'s-pending',已审批:'s-approved',取消:'s-cancelled',审核中:'s-pending',已完成:'s-approved',已拒绝:'s-rejected'};
+
+function renderDep() {
+  const el=document.getElementById('depRecList'); if(!el) return;
+  if(!S.depRecs.length){ el.innerHTML=emptyHtml(); document.getElementById('depPg').innerHTML=''; return; }
+  el.innerHTML=S.depRecs.map((r,i)=>`
+    <div class="rec-card">
+      <div class="rec-hdr" onclick="togRec('dr${i}','darr${i}')">
+        <span class="tid">Task ID/${r.id}</span>
+        <span class="chev" id="darr${i}">▾</span>
+      </div>
+      <div class="rec-body">
+        <span class="rec-amt">$${r.amt.toFixed(2)}</span>
+        <div class="rec-right"><div class="rec-time">${r.time}</div><span class="stat ${SC[r.status]||'s-pending'}">${r.status}</span></div>
+      </div>
+      <div class="rec-detail" id="dr${i}">
+        <div class="dl"><span>支付渠道</span><span>${r.ch}</span></div>
+        <div class="dl"><span>金额</span><span>$${r.amt.toFixed(2)}</span></div>
+        <div class="dl"><span>时间</span><span>${r.time}</span></div>
+        <div class="dl"><span>状态</span><span>${r.status}</span></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('depPg').innerHTML=`
+    <div style="text-align:center;padding:8px 0;font-size:13px;color:#aaa">共${S.depRecs.length}条</div>
+    <div class="pagination-strip" style="margin:0 12px 12px">
+      <div class="pg-space"></div>
+      <div class="pg-nav">‹</div><div class="pg-cur">1</div><div class="pg-nav">›</div>
+    </div>`;
+}
+function renderWd() {
+  const el=document.getElementById('wdRecList'); if(!el) return;
+  if(!S.wdRecs.length){el.innerHTML=emptyHtml();return;}
+  el.innerHTML=S.wdRecs.map((r,i)=>`
+    <div class="rec-card">
+      <div class="rec-hdr" onclick="togRec('wr${i}','warr${i}')">
+        <span class="tid">Task ID/${r.id}</span><span class="chev" id="warr${i}">▾</span>
+      </div>
+      <div class="rec-body">
+        <span class="rec-amt">$${r.amt.toFixed(2)}</span>
+        <div class="rec-right"><div class="rec-time">${r.time}</div><span class="stat s-pending">${r.status}</span></div>
+      </div>
+      <div class="rec-detail" id="wr${i}">
+        <div class="dl"><span>金额</span><span>$${r.amt.toFixed(2)}</span></div>
+        <div class="dl"><span>时间</span><span>${r.time}</span></div>
+        <div class="dl"><span>状态</span><span>${r.status}</span></div>
+      </div>
+    </div>`).join('');
+}
+function renderTr() {
+  const el=document.getElementById('trRecList'); if(!el) return;
+  if(!S.trRecs.length){el.innerHTML=emptyHtml();return;}
+  el.innerHTML=S.trRecs.map((r,i)=>`
+    <div class="rec-card">
+      <div class="rec-hdr" onclick="togRec('trr${i}','trarr${i}')">
+        <span class="tid">Task ID/${r.id}</span><span class="chev" id="trarr${i}">▾</span>
+      </div>
+      <div class="rec-body">
+        <span class="rec-amt">$${r.amt.toFixed(2)}</span>
+        <div class="rec-right"><div class="rec-time">${r.time}</div><span class="stat s-approved">${r.status}</span></div>
+      </div>
+      <div class="rec-detail" id="trr${i}">
+        <div class="dl"><span>金额</span><span>$${r.amt.toFixed(2)}</span></div>
+        <div class="dl"><span>时间</span><span>${r.time}</span></div>
+        <div class="dl"><span>出账</span><span>${r.from}</span></div>
+        <div class="dl"><span>入账</span><span>${r.to}</span></div>
+      </div>
+    </div>`).join('');
+}
+function renderTd() {
+  const el=document.getElementById('tdRecList'); if(!el) return;
+  el.innerHTML=S.tdRecs.map((r,i)=>`
+    <div class="trade-card">
+      <div class="trade-hdr" onclick="togRec('tdd${i}','tdarr${i}')">
+        <span class="tid">Ticket No / ${r.id}</span><span class="chev" id="tdarr${i}">▾</span>
+      </div>
+      <div class="trade-body">
+        <div><div class="t-symbol">${r.sym}</div><div class="t-price">${r.from} → ${r.to}</div></div>
+        <div style="text-align:right"><div class="t-dir">${r.dir}</div><div class="t-pnl ${r.pnl>=0?'pnl-neg':'pnl-pos'}">${r.pnl>=0?'+':''}${r.pnl.toFixed(2)}</div></div>
+      </div>
+      <div class="rec-detail" id="tdd${i}">
+        <div class="dl"><span>票据号</span><span>${r.id}</span></div>
+        <div class="dl"><span>品种</span><span>${r.sym}</span></div>
+        <div class="dl"><span>方向</span><span>${r.dir}</span></div>
+        <div class="dl"><span>开仓价</span><span>${r.from}</span></div>
+        <div class="dl"><span>平仓价</span><span>${r.to}</span></div>
+        <div class="dl"><span>盈亏</span><span class="${r.pnl>=0?'pnl-neg':'pnl-pos'}">${r.pnl>=0?'+':''}${r.pnl.toFixed(2)}</span></div>
+      </div>
+    </div>`).join('');
+}
+function emptyHtml(){
+  return `<div class="empty-wrap" style="margin-top:20px"><div class="empty-svg"><svg width="80" height="90" viewBox="0 0 80 90" fill="none"><rect x="10" y="5" width="50" height="65" rx="4" fill="#e0e4f0" stroke="#c8cce0" stroke-width="1.5"/><rect x="18" y="18" width="34" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="28" width="28" height="4" rx="2" fill="#c0c6de"/><rect x="18" y="38" width="22" height="4" rx="2" fill="#c0c6de"/><rect x="5" y="55" width="50" height="30" rx="4" fill="#d0d4ec" stroke="#b8bcd8" stroke-width="1.5"/></svg></div><p>暂无数据！</p></div>`;
+}
+function togRec(detId, arrId) {
+  const det=document.getElementById(detId); if(!det) return;
+  det.classList.toggle('open');
+  const arr=document.getElementById(arrId);
+  if(arr) arr.classList.toggle('open');
+}
+
+// ===== CHARTS =====
+let pc, fc;
+const LABELS=['04-08','04-09','04-10','04-11','04-12','04-13','04-14'];
+
+function initCharts() {
+  pc = new Chart(document.getElementById('profitChart').getContext('2d'),{
+    type:'line',
+    data:{labels:LABELS,datasets:[{
+      data:[0,0,0,0,0,0.756,0.756],
+      borderColor:'#2B3A87',backgroundColor:'rgba(43,58,135,0.07)',
+      borderWidth:1.8,pointRadius:3,pointBackgroundColor:'#2B3A87',fill:true,tension:0.05
+    }]},
+    options:{responsive:true,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>''+c.parsed.y.toFixed(3)}}},
+      scales:{y:{min:0,max:1,ticks:{stepSize:0.2,font:{size:11}},grid:{color:'#eee'}},
+        x:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+  updFlow();
+}
+
+function buildFlow() {
+  const base=[0,0,0,0,0,0,257.28];
+  S.depRecs.filter(r=>r.status!=='取消').forEach(r=>{ base[6]=(base[6]||0)+r.amt; });
+  S.wdRecs.forEach(r=>{ base[6]=Math.max(0,(base[6]||0)-r.amt); });
+  return base;
+}
+function updFlow() {
+  const data=buildFlow();
+  const maxV=Math.max(...data,100);
+  if(fc) fc.destroy();
+  fc = new Chart(document.getElementById('flowChart').getContext('2d'),{
+    type:'line',
+    data:{labels:LABELS,datasets:[{
+      data,
+      borderColor:'#2B3A87',backgroundColor:'rgba(43,58,135,0.1)',
+      borderWidth:1.8,pointRadius:3,pointBackgroundColor:'#2B3A87',fill:true,tension:0.05
+    }]},
+    options:{responsive:true,plugins:{legend:{display:false},
+      tooltip:{callbacks:{
+        title:c=>c[0].label,
+        label:()=>[
+          '总入金: '+S.depRecs.filter(r=>r.status!=='取消').reduce((a,b)=>a+b.amt,0).toFixed(0),
+          '总出金: '+S.wdRecs.reduce((a,b)=>a+b.amt,0).toFixed(0),
+          '净入金: '+(S.depRecs.filter(r=>r.status!=='取消').reduce((a,b)=>a+b.amt,0)-S.wdRecs.reduce((a,b)=>a+b.amt,0)).toFixed(0)
+        ]
+      }}},
+      scales:{y:{min:0,suggestedMax:maxV*1.15,ticks:{font:{size:11}},grid:{color:'#eee'}},
+        x:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+}
+
+// ===== LANG =====
+function toggleLang(e) {
+  e.stopPropagation();
+  document.getElementById('langDd').classList.toggle('show');
+}
+function setLang(code) {
+  const nm={zh:'',en:'',vi:'',id:'',ko:'',ja:'',mn:''};
+  document.getElementById('currentLang').textContent=' ▾';
+  document.querySelectorAll('.lang-opt').forEach(o=>{
+    const txt=o.textContent.trim();
+    const map={en:'English',zh:'简体中文',vi:'Tiếng Việt',id:'Bahasa Indonesia',ko:'한국어',ja:'日本語',mn:'Монгол хэл'};
+    o.classList.toggle('cur', map[code]&&txt.includes(map[code]));
+  });
+  document.getElementById('langDd').classList.remove('show');
+  toast('语言已切换');
+}
+function setLangMenu(code, name, el) {
+  document.querySelectorAll('.lang-tick').forEach(t=>{t.textContent='›';});
+  el.querySelector('.lang-tick').textContent='✓';
+  setLang(code);
+}
+document.addEventListener('click',()=>document.getElementById('langDd').classList.remove('show'));
+
+// ===== CHAR COUNT =====
+function cc(el,id){ document.getElementById(id).textContent=el.value.length; }
+
+// ===== TOAST =====
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.remove('show');
+  void t.offsetWidth; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===== LOGOUT =====
+function doLogout(){ if(confirm('确认退出登录？')){toast('已退出登录');} }
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded',()=>{
+  initCharts();
+  renderAll();
+});
+</script>
+</body>
+</html>
